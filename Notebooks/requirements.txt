@@ -8,5 +8,5 @@ plotly
 matplotlib
 seaborn
 google-generativeai
-
 openpyxl
+
