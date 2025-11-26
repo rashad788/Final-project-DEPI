@@ -4,14 +4,17 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
-
+from pathlib import Path
 
 st.set_page_config(layout="wide")
 
 st.title("📁 Data Exploration")
 st.header("Data Sample", divider=True)
 
-df =pd.read_csv('cleaned_dataset.csv')
+BASE_DIR = Path(__file__).resolve().parent.parent  # points to Notebooks/Streamlit
+DATA_PATH = BASE_DIR / "cleaned_dataset.csv"
+
+df = pd.read_csv(DATA_PATH)
 
 df.reset_index(drop=True, inplace=True)
 
@@ -212,3 +215,4 @@ fig7.update_layout(
 )
 
 st.plotly_chart(fig7, use_container_width=True)
+
