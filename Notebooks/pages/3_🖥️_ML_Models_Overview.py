@@ -8,20 +8,28 @@ from sklearn.metrics import confusion_matrix, classification_report
 from pathlib import Path
 
 # =========================================================
-# ✅ BULLETPROOF BASE PATH (POINTS TO REPO ROOT)
-# Final-project-DEPI/
+# ✅ AUTO-DETECT PROJECT ROOT
 # =========================================================
-BASE_DIR = Path(__file__).resolve().parents[2]
+BASE_DIR = Path(__file__).resolve().parents[2]  # Final-project-DEPI
 
 # =========================================================
-# ✅ LOAD TEST DATA SAFELY (FROM REPO ROOT)
+# ✅ AUTO-FIND FILES ANYWHERE IN PROJECT
 # =========================================================
-X_test_path = BASE_DIR / "X_test.csv"
-y_test_path = BASE_DIR / "y_test.csv"
+def find_file(filename):
+    matches = list(BASE_DIR.rglob(filename))
+    if not matches:
+        st.error(f"❌ File not found anywhere in the project: {filename}")
+        st.stop()
+    return matches[0]
+
+# =========================================================
+# ✅ LOAD TEST DATA SAFELY
+# =========================================================
+X_test_path = find_file("X_test.csv")
+y_test_path = find_file("y_test.csv")
 
 X_test = pd.read_csv(X_test_path)
 y_test = pd.read_csv(y_test_path).values.ravel()
-
 
 # =========================================================
 # ✅ Helper: Display Confusion Matrix + Metrics
@@ -29,8 +37,8 @@ y_test = pd.read_csv(y_test_path).values.ravel()
 def show_model_results(model_name, model_filename):
     st.header(f"📌 {model_name} Results")
 
-    # ✅ Load model safely from repo root
-    model_path = BASE_DIR / model_filename
+    # ✅ Load model safely from anywhere
+    model_path = find_file(model_filename)
     model = joblib.load(model_path)
 
     # Predict
@@ -82,37 +90,4 @@ st.markdown("---")
 
 # =========================================================
 # ✅ TUNED MODELS
-# =========================================================
-st.header("🏆 Tuned Models", divider=True)
-
-show_model_results("Random Forest Classifier (Tuned)", "rf_best_model.joblib")
-show_model_results("XGBoost (Tuned)", "xgb_best_model.joblib")
-
-st.markdown("""
-# **Customer Churn Model Tuning & Interpretation Report**
-
-### The goal of this phase was to tune and interpret two machine learning models — **Random Forest** and **XGBoost** — to predict customer churn based on the available data.
-
-## ✅ Random Forest (Tuned)
-- Best CV Accuracy: **0.9309**
-- Final Test Accuracy: **0.9321**
-- Strong generalization with controlled overfitting
-
-## ✅ XGBoost (Tuned)
-- Best CV Accuracy: **0.9331**
-- Final Test Accuracy: **0.9340**
-- Slightly better than Random Forest due to boosting
-
-### ✅ Final Choice: **XGBoost**
-""")
-
-st.markdown("""
-## ✅ Business Impact
-The model can reliably detect customers at risk of churn using:
-- Tenure
-- Monthly charges
-- Contract type
-- Customer service calls
-
-This allows for **early intervention and targeted retention strategies**.
-""")
+# ==========================
