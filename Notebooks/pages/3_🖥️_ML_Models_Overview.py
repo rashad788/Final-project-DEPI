@@ -85,18 +85,32 @@ def show_model_results(model_name, model_filename):
 show_model_results("Logistic Regression", "log_reg_model.joblib")
 
 
+from pathlib import Path
+
 # =========================================================
-# ✅ RANDOM FOREST (STATIC SHOWCASE - REAL RESULTS)
+# ✅ AUTO-DETECT PROJECT ROOT
 # =========================================================
-st.header("📌 Random Forest Classifier Results")
+BASE_DIR = Path(__file__).resolve().parents[2]  # Final-project-DEPI
+
+# =========================================================
+# ✅ AUTO-FIND FILES ANYWHERE IN PROJECT
+# =========================================================
+def find_file(filename):
+    matches = list(BASE_DIR.rglob(filename))
+    if not matches:
+        st.error(f"❌ File not found anywhere in the project: {filename}")
+        st.stop()
+    return matches[0]
 
 # ---- CONFUSION MATRIX IMAGE ----
 st.subheader("Confusion Matrix")
 
 try:
-    st.image("rf_model.png", caption="Random Forest – Confusion Matrix", use_container_width=True)
+    rf_image_path = find_file("rf_model.png")
+    st.image(rf_image_path, caption="Random Forest – Confusion Matrix", use_container_width=True)
 except:
     st.info("Random Forest confusion matrix image not found.")
+
 
 # ---- CLASSIFICATION METRICS (REAL VALUES) ----
 st.subheader("Performance Metrics")
@@ -168,4 +182,5 @@ st.markdown("""
 
 ## From a business perspective, these results indicate that the model can effectively identify customers who are likely to leave the service. Factors such as **tenure, contract type, number of customer service calls, and monthly charges** are likely to be among the most influential in predicting churn. Companies can use these insights to design targeted retention strategies, such as offering discounts or personalized support to at-risk customers.
 """)
+
 
