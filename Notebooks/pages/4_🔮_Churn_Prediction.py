@@ -20,10 +20,17 @@ except FileNotFoundError:
     api_key = "PLACEHOLDER_FOR_LOCAL_TESTING" 
 
 genai.configure(api_key=api_key)
+
+
+BASE_DIR = Path(__file__).resolve().parent
+
+MODEL_PATH = BASE_DIR / "xgb_best_model.joblib"
+FEATURE_IMPORTANCE_PATH = BASE_DIR / "xgb_importances.xlsx"
+
 # Load the model
 # NOTE: Ensure the path is correct for your local machine or deployment
 try:
-    model = joblib.load('xgb_best_model.joblib') # Adjusted path for relative reference, change back if needed
+    model = joblib.load(MODEL_PATH) # Adjusted path for relative reference, change back if needed
 except:
     st.error("Model file not found. Please check the path.")
 
@@ -106,7 +113,7 @@ left_col, right_col = st.columns([1, 1])
 with left_col:
     st.subheader("Feature Importance")
     try:
-        feature_importance_df = pd.read_excel("xgb_importances.xlsx", usecols=["feature", "Score"])
+        feature_importance_df = pd.read_excel(FEATURE_IMPORTANCE_PATH, usecols=["feature", "Score"])
         fig = px.bar(
             feature_importance_df.head(10).sort_values(by="Score", ascending=True),
             x="Score",
@@ -230,4 +237,5 @@ if st.session_state.get("is_churn", False):
 
 elif st.session_state.get("prediction_made", False) and not st.session_state.is_churn:
     st.info("👋 This customer is Low Risk. No retention intervention is needed.")
+
 
