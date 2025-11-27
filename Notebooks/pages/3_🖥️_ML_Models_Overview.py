@@ -5,27 +5,38 @@ import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
+from pathlib import Path
 
-# ------------------------------
-# Load test data
-# ------------------------------
-X_test = pd.read_csv("X_test.csv")
-y_test = pd.read_csv("y_test.csv").values.ravel()
+# =========================================================
+# ✅ BULLETPROOF BASE PATH (POINTS TO REPO ROOT)
+# Final-project-DEPI/
+# =========================================================
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+# =========================================================
+# ✅ LOAD TEST DATA SAFELY (FROM REPO ROOT)
+# =========================================================
+X_test_path = BASE_DIR / "X_test.csv"
+y_test_path = BASE_DIR / "y_test.csv"
+
+X_test = pd.read_csv(X_test_path)
+y_test = pd.read_csv(y_test_path).values.ravel()
 
 
 # =========================================================
-# Helper: Display Confusion Matrix + Metrics
+# ✅ Helper: Display Confusion Matrix + Metrics
 # =========================================================
-def show_model_results(model_name, model_path):
+def show_model_results(model_name, model_filename):
     st.header(f"📌 {model_name} Results")
 
-    # Load model
+    # ✅ Load model safely from repo root
+    model_path = BASE_DIR / model_filename
     model = joblib.load(model_path)
 
     # Predict
     y_pred = model.predict(X_test)
 
-    # Compute Confusion Matrix
+    # Confusion Matrix
     cm = confusion_matrix(y_test, y_pred)
 
     # Plotly Confusion Matrix
@@ -44,7 +55,7 @@ def show_model_results(model_name, model_path):
 
     st.plotly_chart(fig, use_container_width=True)
 
-    # Show values in a table
+    # Show matrix table
     st.subheader("Confusion Matrix Values")
     cm_df = pd.DataFrame(
         cm,
@@ -61,41 +72,47 @@ def show_model_results(model_name, model_path):
 
 
 # =========================================================
-# Run all models sequentially
+# ✅ RUN ALL BASE MODELS
 # =========================================================
 show_model_results("Logistic Regression", "log_reg_model.joblib")
 show_model_results("Random Forest Classifier (Base)", "rf_model.joblib")
 show_model_results("XGBoost (Base)", "xgb_model.joblib")
 
-
 st.markdown("---")
 
+# =========================================================
+# ✅ TUNED MODELS
+# =========================================================
 st.header("🏆 Tuned Models", divider=True)
-show_model_results("Random Forest Classifier (tuned)", "rf_best_model.joblib")
+
+show_model_results("Random Forest Classifier (Tuned)", "rf_best_model.joblib")
 show_model_results("XGBoost (Tuned)", "xgb_best_model.joblib")
 
-
 st.markdown("""
-#  **Customer Churn Model Tuning & Interpretation Report**
+# **Customer Churn Model Tuning & Interpretation Report**
 
-### The goal of this phase was to tune and interpret two machine learning models — **Random Forest** and **XGBoost** — to predict customer churn based on the available data. Both models were trained, optimized, and evaluated using cross-validation and test accuracy.
+### The goal of this phase was to tune and interpret two machine learning models — **Random Forest** and **XGBoost** — to predict customer churn based on the available data.
 
-## For the **Random Forest model**, the best parameters found were:
-### `max_depth = 15`, `max_features = 'sqrt'`, `min_samples_leaf = 1`, `min_samples_split = 5`, and `n_estimators = 100`.
-### The model achieved a **best cross-validation accuracy of 0.9309** and a **final test accuracy of 0.9321**.
-### This means the model performs very well, correctly predicting around 93% of the cases.
-### The deep trees allow the model to capture complex relationships in the data, while the chosen split and leaf parameters help maintain generalization and avoid overfitting.
+## ✅ Random Forest (Tuned)
+- Best CV Accuracy: **0.9309**
+- Final Test Accuracy: **0.9321**
+- Strong generalization with controlled overfitting
 
-## For the **XGBoost model**, the best parameters were:
-### `colsample_bytree = 1.0`, `learning_rate = 0.1`, `max_depth = 7`, `n_estimators = 100`, and `subsample = 1.0`.
-### The model achieved a **best cross-validation accuracy of 0.9331** and a **final test accuracy of 0.9340**.
-### XGBoost slightly outperformed Random Forest. Its performance advantage comes from its ability to handle complex feature interactions and reduce errors through boosting. The moderate learning rate allows the model to learn gradually and avoid overfitting.
+## ✅ XGBoost (Tuned)
+- Best CV Accuracy: **0.9331**
+- Final Test Accuracy: **0.9340**
+- Slightly better than Random Forest due to boosting
+
+### ✅ Final Choice: **XGBoost**
 """)
 
-st.markdown("---")
-
 st.markdown("""
-### In general, both models achieved very strong performance, with XGBoost showing a small but consistent improvement. Therefore, XGBoost can be considered the final chosen model for predicting customer churn.
+## ✅ Business Impact
+The model can reliably detect customers at risk of churn using:
+- Tenure
+- Monthly charges
+- Contract type
+- Customer service calls
 
-## From a business perspective, these results indicate that the model can effectively identify customers who are likely to leave the service. Factors such as **tenure, contract type, number of customer service calls, and monthly charges** are likely to be among the most influential in predicting churn. Companies can use these insights to design targeted retention strategies, such as offering discounts or personalized support to at-risk customers.
+This allows for **early intervention and targeted retention strategies**.
 """)
