@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import google.generativeai as genai
-
+from pathlib import Path
 # ==========================================
 # 1. SETUP & CONFIGURATION
 # ==========================================
@@ -237,5 +237,6 @@ if st.session_state.get("is_churn", False):
 
 elif st.session_state.get("prediction_made", False) and not st.session_state.is_churn:
     st.info("👋 This customer is Low Risk. No retention intervention is needed.")
+
 
 
