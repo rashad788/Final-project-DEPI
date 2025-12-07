@@ -221,7 +221,7 @@ if st.session_state.get("is_churn", False):
             chat_history = [{"role": "user" if m["role"] == "user" else "model", "parts": [m["content"]]} for m in st.session_state.messages]
             
             # Initialize model with system instruction (using gemini-2.0-flash for speed)
-            model_ai = genai.GenerativeModel('gemini-2.0-flash', system_instruction=system_instruction)
+            model_ai = genai.GenerativeModel('gemini-2.5-flash', system_instruction=system_instruction)
             
             # Generate response
             response = model_ai.generate_content(chat_history)
@@ -237,6 +237,7 @@ if st.session_state.get("is_churn", False):
 
 elif st.session_state.get("prediction_made", False) and not st.session_state.is_churn:
     st.info("👋 This customer is Low Risk. No retention intervention is needed.")
+
 
 
 
